@@ -4,7 +4,16 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { suborgan } from "@/types/suborgan";
 
-export const findAllSuborgan = async () => {
+export const getAllSuborganName = async () => {
+	return prisma.suborgan.findMany({
+		select: {
+			id: true,
+			name: true,
+		},
+	});
+};
+
+export const findAllSuborganVote = async () => {
 	const suborganizations = await prisma.suborgan.findMany({
 		include: {
 			Vote_Session: true,

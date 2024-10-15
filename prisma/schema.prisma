@@ -79,12 +79,12 @@ model Vote_Session {
 }
 
 model Vote_Session_Candidate {
-  id              String       @id @default(uuid())
-  vote_session_id String
+  id              String        @id @default(uuid())
+  vote_session_id String?
   candidate_id    String
   number          Int
-  vote_session    Vote_Session @relation(fields: [vote_session_id], references: [id])
-  candidate       Candidates   @relation(fields: [candidate_id], references: [id])
+  vote_session    Vote_Session? @relation(fields: [vote_session_id], references: [id])
+  candidate       Candidates    @relation(fields: [candidate_id], references: [id])
 }
 
 model Vote_Session_Access {

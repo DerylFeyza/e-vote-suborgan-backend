@@ -1,6 +1,6 @@
 import SubOrganizationPage from "./_component/SuborganPage";
-import { findAllSuborgan } from "@/utils/database/suborgan.query";
+import { findAllSuborganVote } from "@/utils/database/suborgan.query";
 export default async function SuborganPage() {
-	const suborgans = await findAllSuborgan();
+	const suborgans = await findAllSuborganVote();
 	return <SubOrganizationPage subOrganizations={suborgans} />;
 }

@@ -8,6 +8,18 @@ export const findAllUser = async () => {
 	return await prisma.user.findMany();
 };
 
+export const countAllUsers = async () => {
+	return await prisma.user.count();
+};
+
+export const countUsersInVoteSession = async (voteSessionId: string) => {
+	return await prisma.user_Vote.count({
+		where: {
+			vote_session_id: voteSessionId,
+		},
+	});
+};
+
 export const findUser = async (where: Prisma.UserWhereUniqueInput) => {
 	return await prisma.user.findUnique({ where });
 };

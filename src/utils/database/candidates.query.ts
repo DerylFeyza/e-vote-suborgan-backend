@@ -49,3 +49,7 @@ export const deleteCandidate = async (
 ) => {
 	return await prisma.candidates.delete({ where });
 };
+
+export type CandidatesWithSuborgan = Prisma.CandidatesGetPayload<{
+	include: { suborgan: { select: { name: true } } };
+}>;

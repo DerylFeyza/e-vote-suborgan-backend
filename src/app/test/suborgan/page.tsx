@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import SuborganForm from "./SuborganForm";
 import { handleCreateSuborgan } from "@/utils/actions/suborgan";
 import {
-	findAllSuborgan,
+	findAllSuborganVote,
 	deleteSuborgan,
 } from "@/utils/database/suborgan.query";
 import { Suborgan } from "@prisma/client"; // Adjust import based on your actual model location
@@ -15,7 +15,7 @@ export default function CreateSuborganPage() {
 
 	// Fetch all Suborgan records
 	const fetchSuborgans = async () => {
-		const data = await findAllSuborgan();
+		const data = await findAllSuborganVote();
 		setSuborgans(data);
 	};
 
