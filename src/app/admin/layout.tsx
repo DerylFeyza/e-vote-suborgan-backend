@@ -1,13 +1,28 @@
-export default function AdminLayout({
-    children,
-  }: Readonly<{
-    children: React.ReactNode;
-  }>) {
-    return (
-      <>
-        {/* <div className="w-full h-[20px] xl:h-0 bg-neutral-500"></div> */}
-        <main className="mt-[58px] xl:mt-[88px] overflow-hidden">{children}</main>
-      </>
-    );
-  }
-  
+import { Metadata } from "next";
+import Sidebar from "@/app/components/general/Sidebar";
+import AdminHeaders from "./_components/AdminHeaders";
+
+export const metadata: Metadata = {
+  title: "Admin | E-Pilketos Moklet",
+  description: "Admin | E-Pilketos SMK Telkom Malang",
+};
+
+export default function MainLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <main className="bg-red-light-6">
+      <div className="lg:ml-80">
+        <Sidebar />
+        <div className="px-[28px]">
+          <div className="max-w-full w-full py-6">
+            <AdminHeaders />
+            {children}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
