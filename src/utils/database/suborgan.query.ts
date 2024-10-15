@@ -4,7 +4,26 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export const findAllSuborgan = async () => {
-	return await prisma.suborgan.findMany();
+	const suborganizations = await prisma.suborgan.findMany({
+		include: {
+			Vote_Session: true,
+		},
+	});
+
+	const currentDate = new Date();
+
+	return suborganizations.map((suborgan) => {
+		const hasOpenSession = suborgan.Vote_Session.some((session) =>
+			session.openedAt && session.closedAt
+				? currentDate >= session.openedAt && currentDate <= session.closedAt
+				: false
+		);
+
+		return {
+			...suborgan,
+			status: hasOpenSession ? "Buka" : "Tutup",
+		};
+	});
 };
 
 export const findSuborgan = async (where: Prisma.SuborganWhereUniqueInput) => {

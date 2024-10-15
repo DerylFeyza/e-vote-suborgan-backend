@@ -70,7 +70,7 @@ export default function Navbar() {
 			  }
 			: {
 					title: "Vote",
-					href: "/vote",
+					href: "/suborgan",
 			  },
 		{ title: "Pengembang", href: "/pengembang" },
 	];

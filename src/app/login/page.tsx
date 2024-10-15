@@ -30,7 +30,7 @@ export default function LoginPage() {
 					</Large_Text>
 					<FormButton
 						onClick={() =>
-							signIn("google", { callbackUrl: "/vote", redirect: false })
+							signIn("google", { callbackUrl: "/suborgan", redirect: false })
 						}
 						variant="PRIMARY"
 						className="flex items-center gap-x-4 w-full justify-center group bg-[#C1121F] text-white py-3 rounded-full"
