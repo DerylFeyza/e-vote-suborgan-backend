@@ -61,7 +61,7 @@ model Pengalaman {
   id           String     @id @default(uuid())
   description  String
   candidate_id String
-  canditates   Candidates @relation(fields: [candidate_id], references: [id])
+  canditates   Candidates @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
 }
 
 model Vote_Session {
@@ -84,7 +84,7 @@ model Vote_Session_Candidate {
   candidate_id    String
   number          Int
   vote_session    Vote_Session? @relation(fields: [vote_session_id], references: [id])
-  candidate       Candidates    @relation(fields: [candidate_id], references: [id])
+  candidate       Candidates    @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
 }
 
 model Vote_Session_Access {

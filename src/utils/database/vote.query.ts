@@ -74,6 +74,7 @@ export const checkIfSuborganVoteSessionIsOngoing = async (
 		include: {
 			suborgan: {
 				select: {
+					id: true,
 					name: true,
 				},
 			},

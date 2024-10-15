@@ -1,17 +1,36 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { createCandidate, updateCandidate } from "../database/candidates.query";
+import {
+	createCandidate,
+	updateCandidate,
+	deleteCandidate,
+	findCandidate,
+} from "../database/candidates.query";
 import { createVoteSessionCandidate } from "../database/vote.query";
 import { findVoteSession } from "../database/vote.query";
+import { imageUploader, handleImageDelete } from "./fileUploader";
+
+interface vote_session_candidate {
+	candidate: {
+		connect: {
+			id: string;
+		};
+	};
+	number: number;
+	vote_session?: {
+		connect: {
+			id: string;
+		};
+	};
+}
 
 export const handleCreateCandidate = async (
-	vote_session: string,
-	formData: FormData
+	suborgan_id: string,
+	formData: FormData,
+	vote_session?: string
 ) => {
-	const suborgan = await findVoteSession({ id: vote_session });
-	if (suborgan === null) return;
 	const candidateData = {
-		img: formData.get("img") as string,
+		img: "",
 		name: formData.get("name") as string,
 		kelas: formData.get("kelas") as string,
 		visi: formData.get("visi") as string,
@@ -20,30 +39,50 @@ export const handleCreateCandidate = async (
 		progja: formData.get("progja") as string,
 		video_profil: formData.get("video_profil") as string,
 		suborgan: {
-			connect: { id: suborgan.suborgan_id },
+			connect: { id: suborgan_id },
 		},
 	};
 
 	try {
-		const response = await createCandidate(candidateData);
+		const gambar = formData.get("gambar") as File;
+		if (!gambar) {
+			return {
+				success: false,
+				message: "Gambar tidak boleh kosong",
+			};
+		}
 
+		const urlGambar = await imageUploader(gambar);
+		console.log(urlGambar);
+		if (!urlGambar.success) {
+			return { success: false, message: urlGambar.message };
+		}
+
+		if (urlGambar.data?.url) {
+			candidateData.img = urlGambar.data.url;
+		}
+		const response = await createCandidate(candidateData);
 		if (response && response.id) {
-			await createVoteSessionCandidate({
-				vote_session: {
-					connect: { id: vote_session },
-				},
+			const voteSessionCandidateData: vote_session_candidate = {
 				candidate: {
 					connect: { id: response.id },
 				},
-				number: Number(formData.get("candidate_number") as string),
-			});
+				number: Number(formData.get("nomor") as string),
+			};
+			if (vote_session) {
+				voteSessionCandidateData.vote_session = {
+					connect: { id: vote_session },
+				};
+			}
+			await createVoteSessionCandidate(voteSessionCandidateData);
 		}
 
 		revalidatePath("/", "layout");
+		return { success: true, message: "Kandidat berhasil ditambahkan" };
 	} catch (error) {
 		console.error("Error creating candidate or vote session candidate:", error);
+		return { success: false, message: "Gagal menahbahkan kandidat" };
 	}
-	revalidatePath("/", "layout");
 };
 
 export const handleUpdateCandidate = async (id: string, formData: FormData) => {
@@ -64,4 +103,23 @@ export const handleUpdateCandidate = async (id: string, formData: FormData) => {
 
 	await updateCandidate({ id }, candidateData);
 	revalidatePath("/", "layout");
+};
+
+export const handleDeleteCandidate = async (id: string) => {
+	try {
+		const candidate = await findCandidate({ id });
+		if (candidate) {
+			const deleteResult = await handleImageDelete(candidate.img);
+			if (!deleteResult.success) {
+				return { success: false, message: deleteResult.message };
+			}
+		}
+
+		await deleteCandidate({ id });
+		revalidatePath("/", "layout");
+		return { success: true, message: "Kandidat berhasil dihapus" };
+	} catch (error) {
+		console.error("Error creating candidate or vote session candidate:", error);
+		return { success: false, message: "Gagal menghapus kandidat" };
+	}
 };

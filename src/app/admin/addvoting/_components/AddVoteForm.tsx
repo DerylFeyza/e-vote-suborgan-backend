@@ -172,7 +172,7 @@ export default function AddVoteForm({
 						disabled={status === "ongoing"}
 					/>
 				</div>
-				<FormButton type="submit" variant="PRIMARY" className="w-full">
+				<FormButton type="submit" variant="PRIMARY" className="w-full mb-4">
 					{isLoading ? (
 						<div className="flex items-center gap-x-3 justify-center">
 							<svg

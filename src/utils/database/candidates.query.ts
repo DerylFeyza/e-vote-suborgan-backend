@@ -12,6 +12,12 @@ export const findAllCandidates = async (
 	});
 };
 
+export const findCandidate = async (
+	where: Prisma.CandidatesWhereUniqueInput
+) => {
+	return await prisma.candidates.findUnique({ where });
+};
+
 export const findAllCandidatesByVoteSession = async (voteSessionId: string) => {
 	return await prisma.candidates.findMany({
 		where: {
@@ -24,6 +30,25 @@ export const findAllCandidatesByVoteSession = async (voteSessionId: string) => {
 		include: { Pengalaman: true },
 	});
 };
+
+export const findAllCandidatesSuborgan = async (suborgan_id: string) => {
+	return await prisma.candidates.findMany({
+		where: {
+			AND: [
+				{ suborgan_id },
+				{
+					Vote_Session_Candidate: {
+						some: {
+							vote_session_id: null,
+						},
+					},
+				},
+			],
+		},
+		include: { Pengalaman: true },
+	});
+};
+
 export const findCandidates = async (
 	where: Prisma.CandidatesWhereUniqueInput
 ) => {
