@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { suborgan } from "@/types/suborgan";
 
 export const findAllSuborgan = async () => {
 	const suborganizations = await prisma.suborgan.findMany({
@@ -14,16 +15,26 @@ export const findAllSuborgan = async () => {
 
 	return suborganizations.map((suborgan) => {
 		const hasOpenSession = suborgan.Vote_Session.some((session) =>
-			session.openedAt && session.closedAt
+			session.openedAt && session.closedAt && session.isPublic
 				? currentDate >= session.openedAt && currentDate <= session.closedAt
 				: false
 		);
 
+		const openSession = hasOpenSession
+			? suborgan.Vote_Session.find(
+					(session) =>
+						currentDate >= session.openedAt &&
+						currentDate <= session.closedAt &&
+						session.isPublic
+			  )
+			: undefined;
+
 		return {
 			...suborgan,
 			status: hasOpenSession ? "Buka" : "Tutup",
+			Vote_Session: hasOpenSession ? openSession : undefined,
 		};
-	});
+	}) as suborgan[];
 };
 
 export const findSuborgan = async (where: Prisma.SuborganWhereUniqueInput) => {
